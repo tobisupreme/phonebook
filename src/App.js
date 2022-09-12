@@ -17,8 +17,26 @@ const App = () => {
     setNewName(e.target.value)
   }
 
+  const checkIfExists = () => {
+    const check = persons.find(person => person.name.toLowerCase() === newName.toLowerCase())
+
+    if (check) {
+      return true
+    }
+
+    return false
+  }
+
   const saveName = (e) => {
     e.preventDefault()
+    // check for duplicate 
+    const check = checkIfExists()
+
+    if (check) {
+      alert(`${newName} is already added to phonebook`)
+      return
+    }
+
     const newPerson = {
       name: newName,
     }
