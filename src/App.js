@@ -1,9 +1,9 @@
 import { useState } from 'react'
 
-const Display = ({ name }) => {
+const Display = ({ person }) => {
   return (
     <>
-      <span>{name}</span>
+      <span>{person.name}</span> <span>{person.number}</span>
       <br />
     </>
   )
@@ -12,13 +12,18 @@ const Display = ({ name }) => {
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
+  const [newNumber, setNewNumber] = useState('')
 
   const handleNewName = (e) => {
     setNewName(e.target.value)
   }
 
+  const handleNewNumber = (e) => {
+    setNewNumber(e.target.value)
+  }
+
   const checkIfExists = () => {
-    const check = persons.find(person => person.name.toLowerCase() === newName.toLowerCase())
+    const check = persons.find((person) => person.name.toLowerCase() === newName.toLowerCase())
 
     if (check) {
       return true
@@ -29,7 +34,7 @@ const App = () => {
 
   const saveName = (e) => {
     e.preventDefault()
-    // check for duplicate 
+    // check for duplicate
     const check = checkIfExists()
 
     if (check) {
@@ -39,8 +44,11 @@ const App = () => {
 
     const newPerson = {
       name: newName,
+      number: newNumber,
     }
     setPersons(persons.concat(newPerson))
+    setNewName('')
+    setNewNumber('')
   }
 
   return (
@@ -51,6 +59,9 @@ const App = () => {
           name: <input value={newName} onChange={handleNewName} />
         </div>
         <div>
+          number: <input value={newNumber} onChange={handleNewNumber} />
+        </div>
+        <div>
           <button type="submit">add</button>
         </div>
         <h2>Numbers</h2>
@@ -58,7 +69,7 @@ const App = () => {
 
       <div>
         {persons.map((person) => {
-          return <Display key={person.name} name={person.name} />
+          return <Display key={person.name} person={person} />
         })}
       </div>
 
