@@ -1,11 +1,47 @@
 import { useState } from 'react'
 
+const Filter = ({ onChange }) => {
+  return (
+    <div>
+      filter shown with <input onChange={onChange} />
+    </div>
+  )
+}
+
+const Form = (props) => {
+  return (
+    <form onSubmit={props.saveName}>
+      <h2>Add new entry</h2>
+      <div>
+        name: <input value={props.newName} onChange={props.onNewName} />
+      </div>
+      <div>
+        number: <input value={props.newNumber} onChange={props.onNewNumber} />
+      </div>
+      <div>
+        <button type="submit">add</button>
+      </div>
+      <h2>Numbers</h2>
+    </form>
+  )
+}
+
 const DisplaySingle = ({ person }) => {
   return (
     <>
       <span>{person.name}</span> <span>{person.number}</span>
       <br />
     </>
+  )
+}
+
+const Persons = ({ data }) => {
+  return (
+    <div>
+      {data.map((person) => {
+        return <DisplaySingle key={person.name} person={person} />
+      })}
+    </div>
   )
 }
 
@@ -69,30 +105,12 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <div>
-        filter shown with <input onChange={filterListing} />
-      </div>
-      <form onSubmit={saveName}>
-        <h2>Add new entry</h2>
-        <div>
-          name: <input value={newName} onChange={handleNewName} />
-        </div>
-        <div>
-          number: <input value={newNumber} onChange={handleNewNumber} />
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-        <h2>Numbers</h2>
-      </form>
 
-      <div>
-        {dataToShow.map((person) => {
-          return <DisplaySingle key={person.name} person={person} />
-        })}
-      </div>
+      <Filter onChange={filterListing} />
 
-      <div>debug: {newName}</div>
+      <Form saveName={saveName} newName={newName} newNumber={newNumber} onSubmit={saveName} onNewName={handleNewName} onNewNumber={handleNewNumber} />
+
+      <Persons data={dataToShow} />
     </div>
   )
 }
