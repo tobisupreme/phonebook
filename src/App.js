@@ -69,7 +69,7 @@ const App = () => {
     })
 
     if (!window.confirm(`Delete ${person.name}?`)) return
-    
+
     phonebookService
       .remove(id)
       .then(response => {
@@ -82,14 +82,46 @@ const App = () => {
   }
 
   // handle save
+  const saveNewName = (personObject) => {
+    phonebookService
+    .save(personObject)
+    .then(response => {
+      setPersons(persons.concat(response))
+      setNewName('')
+      setNewNumber('')
+    })
+    .catch(err => {
+      alert('❌ Sorry, an error occured')
+    })
+  }
+
+  const saveUpdatedName = (id, personObject) => {
+    phonebookService
+    .update(id, personObject)
+    .then(response => {
+      // console.log("🚀 ~ response", response)
+      const updatedPersons = (persons.map((person) => {
+        return person.id !== response.id ? person : response
+      }))
+      setPersons(updatedPersons)
+      setNewName('')
+      setNewNumber('')
+    })
+    .catch(err => {
+      alert('❌ Sorry, an error occured')
+    })
+  }
+
   const saveName = (e) => {
     e.preventDefault()
     // check for duplicate
+    let action = 'save'
     const check = checkIfExists()
 
     if (check) {
-      alert(`${newName} is already added to phonebook`)
-      return
+      const prompt = window.confirm(`${newName} is already added to phonebook. Replace the old number with a new one?`)
+      if (!prompt) return
+      action = 'update'
     }
 
     const newPerson = {
@@ -97,16 +129,19 @@ const App = () => {
       number: newNumber,
     }
 
-    phonebookService
-      .save(newPerson)
-      .then(response => {
-        setPersons(persons.concat(response))
-        setNewName('')
-        setNewNumber('')
-      })
-      .catch(err => {
-        alert('❌ Sorry, an error occured')
-      })
+    switch (action) {
+      case 'save':
+        saveNewName(newPerson)
+        break
+
+      case 'update':
+        saveUpdatedName(check.id, newPerson)
+        break
+
+      default:
+        break
+    }
+
   }
 
   // get entries from db
@@ -145,10 +180,10 @@ const App = () => {
     const check = persons.find((person) => person.name.toLowerCase() === newName.toLowerCase())
 
     if (check) {
-      return true
+      return check
     }
 
-    return false
+    return null
   }
 
   const dataToShow = searchQuery.isEmpty ? persons : persons.filter((person) => person.name.toLowerCase().includes(searchQuery.query.toLowerCase()))

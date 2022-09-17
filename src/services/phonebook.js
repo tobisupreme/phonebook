@@ -11,6 +11,11 @@ const save = (personObject) => {
   return request.then((response) => response.data)
 }
 
+const update = (id, personObject) => {
+  const request = axios.put(`${baseurl}/${id}`, personObject)
+  return request.then(response => response.data)
+}
+
 const remove = (id) => {
   const request = axios.delete(`${baseurl}/${id}`)
   return request.then(response => response.data)
@@ -20,6 +25,7 @@ const phonebookService = {
   getAll,
   save,
   remove,
+  update,
 }
 
 export default phonebookService
