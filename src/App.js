@@ -52,6 +52,33 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [searchQuery, setSearchQuery] = useState({ isEmpty: true, query: '' })
 
+  const saveName = (e) => {
+    e.preventDefault()
+    // check for duplicate
+    const check = checkIfExists()
+
+    if (check) {
+      alert(`${newName} is already added to phonebook`)
+      return
+    }
+
+    const newPerson = {
+      name: newName,
+      number: newNumber,
+    }
+
+    axios
+      .post('http://localhost:3001/persons', newPerson)
+      .then(response => {
+        setPersons(persons.concat(response.data))
+        setNewName('')
+        setNewNumber('')
+      })
+      .catch(err => {
+        alert('❌ Sorry, an error occured')
+      })
+  }
+
   const hook = () => {
     axios
       .get('http://localhost:3001/persons')
@@ -90,25 +117,6 @@ const App = () => {
     }
 
     return false
-  }
-
-  const saveName = (e) => {
-    e.preventDefault()
-    // check for duplicate
-    const check = checkIfExists()
-
-    if (check) {
-      alert(`${newName} is already added to phonebook`)
-      return
-    }
-
-    const newPerson = {
-      name: newName,
-      number: newNumber,
-    }
-    setPersons(persons.concat(newPerson))
-    setNewName('')
-    setNewNumber('')
   }
 
   const dataToShow = searchQuery.isEmpty ? persons : persons.filter((person) => person.name.toLowerCase().includes(searchQuery.query.toLowerCase()))
