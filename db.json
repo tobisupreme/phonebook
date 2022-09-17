@@ -1,8 +1,14 @@
 {
   "persons": [
-    { "name": "Aisha", "number": "08045739472", "id": 1 },
-    { "name": "Bode", "number": "09023756923", "id": 2 },
-    { "name": "Cathy", "number": "09755357357", "id": 3 },
-    { "name": "Damien", "number": "08647351867", "id": 4 }
+    {
+      "name": "Bode",
+      "number": "09023756923",
+      "id": 2
+    },
+    {
+      "name": "Cathy",
+      "number": "09755357357",
+      "id": 3
+    }
   ]
 }

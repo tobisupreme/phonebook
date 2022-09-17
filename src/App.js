@@ -27,24 +27,34 @@ const Form = (props) => {
   )
 }
 
-const DisplaySingle = ({ person }) => {
+// refactored code to render DisplaySingle directly from App because of button event
+const DisplaySingle = ({ person, onClick }) => {
   return (
-    <>
-      <span>{person.name}</span> <span>{person.number}</span>
+    <div key={person.id} >
+      <span>{person.name}</span>{' '}
+      <span>{person.number}</span>{' '}
+      <button onClick={onClick}>delete</button>
       <br />
-    </>
+    </div>
   )
 }
 
+/* 
 const Persons = ({ data }) => {
   return (
     <div>
       {data.map((person) => {
-        return <DisplaySingle key={person.name} person={person} />
+        return (
+          <>
+            <button>❌</button>{' '}
+            <DisplaySingle key={person.name} person={person} />
+          </>
+        )
       })}
     </div>
   )
-}
+} 
+*/
 
 const App = () => {
   const [persons, setPersons] = useState([])
@@ -52,6 +62,26 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [searchQuery, setSearchQuery] = useState({ isEmpty: true, query: '' })
 
+  // handle delete
+  const removeName = id => {
+    const person = persons.find(p => {
+      return p.id === id
+    })
+
+    if (!window.confirm(`Delete ${person.name}?`)) return
+    
+    phonebookService
+      .remove(id)
+      .then(response => {
+        setPersons(persons.filter(person => person.id !== id))
+        alert('Delete successful ✅')
+      })
+      .catch(err => {
+        alert('Operation unsuccessful! ❌')
+      })
+  }
+
+  // handle save
   const saveName = (e) => {
     e.preventDefault()
     // check for duplicate
@@ -79,6 +109,7 @@ const App = () => {
       })
   }
 
+  // get entries from db
   const hook = () => {
     phonebookService
       .getAll()
@@ -89,6 +120,7 @@ const App = () => {
 
   useEffect(hook, [])
 
+  // filter displayed entries
   const filterListing = (e) => {
     const len = e.target.value.length
     if (len === 0) {
@@ -129,7 +161,13 @@ const App = () => {
 
       <Form saveName={saveName} newName={newName} newNumber={newNumber} onSubmit={saveName} onNewName={handleNewName} onNewNumber={handleNewNumber} />
 
-      <Persons data={dataToShow} />
+      {dataToShow.map((person) => {
+        return (
+          <div key={person.id}>
+            <DisplaySingle person={person} onClick={() => removeName(person.id)} />
+          </div>
+        )
+      })}    
     </div>
   )
 }

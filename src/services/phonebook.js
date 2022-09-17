@@ -11,9 +11,15 @@ const save = (personObject) => {
   return request.then((response) => response.data)
 }
 
+const remove = (id) => {
+  const request = axios.delete(`${baseurl}/${id}`)
+  return request.then(response => response.data)
+}
+
 const phonebookService = { 
   getAll,
   save,
+  remove,
 }
 
 export default phonebookService
