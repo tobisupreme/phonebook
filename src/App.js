@@ -1,6 +1,17 @@
 import { useState, useEffect } from 'react'
 import phonebookService from './services/phonebook'
 
+const Notification = ({status, message}) => {
+  if (!message) return
+  const style = status === 'success' ? 'success' : 'error'
+
+  return (
+    <div className={`notification ${style}`}>
+      <p>{message}</p>
+    </div>
+  )
+}
+
 const Filter = ({ onChange }) => {
   return (
     <div>
@@ -61,6 +72,18 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [searchQuery, setSearchQuery] = useState({ isEmpty: true, query: '' })
+  const [notificationStatus, setNotificationStatus] = useState({status: '', message: null})
+
+  const handleNotification = ({status, message}) => {
+    const notificationObj = {
+      status,
+      message
+    }
+    setNotificationStatus(notificationObj)
+    setTimeout(() => {
+      setNotificationStatus({...notificationStatus, status: '', message: null})
+    }, 3000);
+  }
 
   // handle delete
   const removeName = id => {
@@ -74,10 +97,18 @@ const App = () => {
       .remove(id)
       .then(response => {
         setPersons(persons.filter(person => person.id !== id))
-        alert('Delete successful ✅')
+        const successObj = {
+          status: 'success',
+          message: `Delete successful ✅`
+        }
+        handleNotification(successObj)
       })
       .catch(err => {
-        alert('Operation unsuccessful! ❌')
+        const errorObj = {
+          status: 'error',
+          message: `Information of ${person.name} has already been removed from the server`
+        }
+        handleNotification(errorObj)
       })
   }
 
@@ -89,9 +120,18 @@ const App = () => {
       setPersons(persons.concat(response))
       setNewName('')
       setNewNumber('')
+      const successObj = {
+        status: 'success',
+        message: `${personObject.name} saved successfully ✅`
+      }
+      handleNotification(successObj)
     })
     .catch(err => {
-      alert('❌ Sorry, an error occured')
+      const errorObj = {
+        status: 'error',
+        message: '❌ Sorry, an error occured'
+      }
+      handleNotification(errorObj)
     })
   }
 
@@ -106,9 +146,18 @@ const App = () => {
       setPersons(updatedPersons)
       setNewName('')
       setNewNumber('')
+      const successObj = {
+        status: 'success',
+        message: `${personObject.name}'s number updated successfully ✅`
+      }
+      handleNotification(successObj)
     })
     .catch(err => {
-      alert('❌ Sorry, an error occured')
+      const errorObj = {
+        status: 'error',
+        message: '❌ Sorry, an error occured'
+      }
+      handleNotification(errorObj)
     })
   }
 
@@ -191,6 +240,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification status={notificationStatus.status} message={notificationStatus.message} />
 
       <Filter onChange={filterListing} />
 
@@ -202,7 +252,7 @@ const App = () => {
             <DisplaySingle person={person} onClick={() => removeName(person.id)} />
           </div>
         )
-      })}    
+      })}
     </div>
   )
 }
